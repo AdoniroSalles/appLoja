@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:loja_virtual/Screens/home_screen.dart';
+import 'package:loja_virtual/Screens/login_screen.dart';
 
 // void main() async{
 //   QuerySnapshot snapshot = await Firestore.instance.collection("homePage").getDocuments();
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         primaryColor : Color.fromARGB(255, 4, 125, 141) ,// cor da barra, botão
       ),
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: LoginScreen(),
     );
   }
 }

@@ -7,8 +7,10 @@ class ProductScreen extends StatefulWidget {
   //recebe o produto, passa para o estado, e o estado recebe o produto e salva
   final ProductData product;
 
+
   ProductScreen(
     this.product
+
   );
 
   @override
@@ -18,6 +20,8 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
 
   final ProductData product;
+
+  String tamanho; //armazena o tamanho selecionado pelo usuario
 
   _ProductScreenState(this.product);
 
@@ -54,7 +58,59 @@ class _ProductScreenState extends State<ProductScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch ,
               children: <Widget>[
                 Text(product.title, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500), maxLines: 3,),
-                Text("R\$ ${product.price.toStringAsFixed(2)}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: primaryColor),)
+                Text("R\$ ${product.price.toStringAsFixed(2)}", style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold, color: primaryColor),),
+                SizedBox(height: 16.0,),
+                Text("Tamanho", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+                SizedBox(
+                  height: 34.0,
+                  child: GridView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 1,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 0.5
+                    ),
+                    //pega o array de tamnhos q vem do banco e transforma em uma lista
+                    children: product.sizes.map(
+                      (s){
+                        return GestureDetector(
+                          onTap: (){
+                            setState(() {
+                              tamanho = s;
+                            
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                              border: Border.all(
+                                color: s == tamanho ? primaryColor : Colors.grey[500],
+                                width: 2.0
+                              ),
+                            ),
+                            width: 50.0,
+                            alignment: Alignment.center,
+                            child: Text(s),
+                          ),
+                        );
+                      }
+                    ).toList(),
+                  ),
+                ),
+                SizedBox(height: 16.0,),
+                SizedBox(
+                  height: 44.0,
+                  child: RaisedButton(
+                    onPressed: tamanho != null ? (){} : null,
+                    child: Text("Adicionar ao Carrinho", style: TextStyle(fontSize: 18.0) ,),
+                    color: primaryColor,
+                    textColor: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 16.0,),
+                Text("Descrição", style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+                Text(product.description, style: TextStyle(fontSize: 16.0)),
               ],
             ),
           )
