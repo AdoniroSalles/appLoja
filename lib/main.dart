@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         primaryColor : Color.fromARGB(255, 4, 125, 141) ,// cor da barra, botão
       ),
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: HomeScreen(),
     );
   }
 }
