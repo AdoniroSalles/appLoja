@@ -15,6 +15,15 @@ class UserModel extends Model{
 
   bool isLoading = false;
 
+  static UserModel of(BuildContext context) => ScopedModel.of<UserModel>(context);
+
+  @override
+  void addListener(listener) {
+    // TODO: implement addListener
+    super.addListener(listener);
+
+    _loadCurrentUser();
+  }
   //para fazer o cadastro
   void signUp({@required Map<String, dynamic> userData, @required String pass, @required VoidCallback onSuccess, @required VoidCallback onFail}){  
     isLoading = true;
@@ -53,8 +62,10 @@ class UserModel extends Model{
       email: email,
       password: pass
     ).then(
-      (user){
-        firebaseUser = user;
+      (user) async{
+        firebaseUser = user; 
+
+        await _loadCurrentUser();
 
         onSuccess();
         isLoading = false;
@@ -79,8 +90,17 @@ class UserModel extends Model{
   }
 
   //para recuperar senha
-  void recoverPass(){
-
+  void recoverPass({ @required String email, @required VoidCallback onSuccess, @required VoidCallback onFail}){
+  
+    _auth.sendPasswordResetEmail(
+      email: email
+    ).then(
+      (user){
+        onSuccess();
+      }
+    ).catchError((e){
+      onFail();
+    });
 
   }
 
@@ -97,5 +117,17 @@ class UserModel extends Model{
     await Firestore.instance.collection("users").document(firebaseUser.uid).setData(userData);
   }
 
-  Future<Null> 
+  Future<Null> _loadCurrentUser() async{
+
+    if(firebaseUser == null)
+      firebaseUser = await _auth.currentUser();
+    if(firebaseUser != null){
+      if(userData["name"] == null){
+        DocumentSnapshot docUser = await Firestore.instance.collection("users").document(firebaseUser.uid).get();
+        userData = docUser.data;
+      }
+    }
+
+    notifyListeners();
+  } 
 }

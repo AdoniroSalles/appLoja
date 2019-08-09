@@ -1,6 +1,11 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
+import 'package:loja_virtual/Screens/cart_screen.dart';
+import 'package:loja_virtual/Screens/login_screen.dart';
+import 'package:loja_virtual/datas/cart_product.dart';
 import 'package:loja_virtual/datas/product_data.dart';
+import 'package:loja_virtual/models/cart_model.dart';
+import 'package:loja_virtual/models/user_models.dart';
 
 class ProductScreen extends StatefulWidget {
 
@@ -10,7 +15,6 @@ class ProductScreen extends StatefulWidget {
 
   ProductScreen(
     this.product
-
   );
 
   @override
@@ -102,8 +106,30 @@ class _ProductScreenState extends State<ProductScreen> {
                 SizedBox(
                   height: 44.0,
                   child: RaisedButton(
-                    onPressed: tamanho != null ? (){} : null,
-                    child: Text("Adicionar ao Carrinho", style: TextStyle(fontSize: 18.0) ,),
+                    onPressed: tamanho != null ? (){
+                      if(UserModel.of(context).isLoggedIn()){
+                        
+                        CartProduct cartProduct = CartProduct();
+                        cartProduct.size = tamanho;
+                        cartProduct.quantity = 1;
+                        cartProduct.pid = product.id;
+                        cartProduct.category = product.category;
+
+                        //Adiciona o produto com as especificações no carrinho 
+                        CartModel.of(context).addCartItem(cartProduct);
+
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => CartScreen())
+                        );
+                      }else{
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen()
+                          )
+                        );
+                      }
+                    } : null,
+                    child: Text(UserModel.of(context).isLoggedIn() ? "Adicionar ao Carrinho" : "Entre para comprar", style: TextStyle(fontSize: 18.0) ,),
                     color: primaryColor,
                     textColor: Colors.white,
                   ),

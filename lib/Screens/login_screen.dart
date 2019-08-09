@@ -72,7 +72,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: FlatButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if(_emailController.text.isEmpty){
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Insira o e-mail para a recuperação de senha!"),
+                            backgroundColor: Colors.redAccent,
+                            duration: Duration(seconds: 2),
+                          )
+                        );
+                      }else{
+                        model.recoverPass(email: _emailController.text, onSuccess: _onSuccess, onFail: _emailFail);
+                        _scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Varifique seu e-mail!"),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            duration: Duration(seconds: 2),
+                          )
+                        );
+                      }
+                    },
                     child: Text(
                       "Esqueci minha senha",
                       textAlign: TextAlign.right,
@@ -119,7 +138,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onFail(){
     _scaffoldKey.currentState.showSnackBar(
       SnackBar(
-        content: Text("Falha ao criar usuário!"),
+        content: Text("Falha fazer login!"),
+        backgroundColor: Colors.redAccent,
+        duration: Duration(seconds: 2),
+      )
+    );
+  }
+
+  void _emailFail(){
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text("E-mail não encontrado, verifique!"),
         backgroundColor: Colors.redAccent,
         duration: Duration(seconds: 2),
       )

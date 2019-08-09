@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:loja_virtual/Screens/home_screen.dart';
 import 'package:loja_virtual/Screens/login_screen.dart';
+import 'package:loja_virtual/models/cart_model.dart';
 import 'package:loja_virtual/models/user_models.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -20,16 +21,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScopedModel<UserModel>(
-      model: UserModel(), //tudo q estiver acesso ao usermodel, pode ser modificado dependendo do usermodel
-      child: MaterialApp(
-        title: "Flutter's Clothing",
-        theme: ThemeData(
-          primarySwatch: Colors.blue, // cor do tema
-          primaryColor: Color.fromARGB(255, 4, 125, 141), // cor da barra, botão
-        ),
-        debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
-      ),
-    );
+        model:UserModel(), //tudo q estiver acesso ao usermodel, pode ser modificado dependendo do usermodel
+        child: ScopedModelDescendant<UserModel>(
+          builder: (context, child, model) {
+            return ScopedModel<CartModel>(
+              model: CartModel(model), 
+              child: MaterialApp(
+                title: "Flutter's Clothing",
+                theme: ThemeData(
+                  primarySwatch: Colors.blue, // cor do tema
+                  primaryColor:
+                      Color.fromARGB(255, 4, 125, 141), // cor da barra, botão
+                ),
+                debugShowCheckedModeBanner: false,
+                home: HomeScreen(),
+              ),
+            );
+          },
+        ));
   }
 }
