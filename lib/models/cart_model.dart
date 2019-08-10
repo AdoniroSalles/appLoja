@@ -10,6 +10,9 @@ class CartModel extends Model{
 
   List<CartProduct> products =[];
 
+  String cupomCode;
+  int discountPercentage = 0;
+
   bool isLoading = false;
 
   CartModel(
@@ -62,6 +65,12 @@ class CartModel extends Model{
     notifyListeners();
   }
 
+  //seta valor de desconto
+  void setCoupon(String couponCode, int discountPercentage){
+    this.cupomCode = couponCode;
+    this.discountPercentage = discountPercentage;
+  }
+
   //mostrar todos os produtos que já estão no carrinho quando for feito o login
   void _loadCartItems() async{
     
@@ -74,4 +83,6 @@ class CartModel extends Model{
 
     notifyListeners();
   }
+
+
 }
