@@ -71,6 +71,82 @@ class CartModel extends Model{
     this.discountPercentage = discountPercentage;
   }
 
+  //atualiza os valores
+  void updatePrice(){
+    notifyListeners();
+  }
+
+  //retorna ao valor do subtotal
+  double getProductsPrice(){
+    double price = 0.0;
+    for(CartProduct c in products){
+      if(c.productData != null)
+        price += c.quantity * c.productData.price;
+    }
+
+    return price;
+
+  }
+
+  //retorna ao valor da entrega
+  double getShipPrice(){
+    //foi colocado um valor fixo pois não estava funcionando corretamente o calculo de frete
+    return 9.99;
+
+  }
+
+  //retorna ao desconto
+  double getDiscount(){
+    return getProductsPrice() * discountPercentage/100 ;
+  } 
+
+  //finalizar pedido
+  Future<String> finishOrder() async{
+
+    if(products.length == 0) return null;
+    isLoading = true;
+    notifyListeners();
+
+    double productsPrice = getProductsPrice();
+    double shipPrice = getShipPrice();
+    double discount = getDiscount();
+
+    //adicionando informação do pedido e pegando o id do pedido. 
+    DocumentReference refOrder = await Firestore.instance.collection("orders").add(
+      {
+        "clienteId" : user.firebaseUser.uid,
+        "products"  : products.map((cartProduct) =>  cartProduct.toMap()).toList(),
+        "shipPrice" : shipPrice,
+        "productsPrice" : productsPrice ,
+        "discount"  : discount,
+        "totalPrice": productsPrice - discount + shipPrice,
+        "status"    : 1
+      }
+    );
+
+    //salavando o id da lista de pedido ao usuario
+    await Firestore.instance.collection("users").document(user.firebaseUser.uid).collection("orders").document(refOrder.documentID).setData(
+      {
+        "orderId" : refOrder.documentID
+      }
+    );
+
+    QuerySnapshot query = await Firestore.instance.collection("users").document(user.firebaseUser.uid).collection("cart").getDocuments();
+
+    for(DocumentSnapshot doc in query.documents){
+      doc.reference.delete();
+    }
+
+    products.clear();
+    discountPercentage = 0;
+    cupomCode = null;
+    isLoading = false;
+    
+    notifyListeners();
+
+    return refOrder.documentID;
+  }
+
   //mostrar todos os produtos que já estão no carrinho quando for feito o login
   void _loadCartItems() async{
     

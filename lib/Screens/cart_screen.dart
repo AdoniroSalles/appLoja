@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loja_virtual/Screens/login_screen.dart';
+import 'package:loja_virtual/Screens/order_screen.dart';
 import 'package:loja_virtual/models/cart_model.dart';
 import 'package:loja_virtual/models/user_models.dart';
 import 'package:loja_virtual/tiles/cart_tile.dart';
@@ -82,7 +83,15 @@ class CartScreen extends StatelessWidget {
                 ),
                 DiscountCart(),
                 ShipCard(),
-                CartPrice((){})
+                CartPrice(() async{
+                  String orderId = await model.finishOrder();
+                  if(orderId != null)
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => OrderScreen(orderId)
+                      )
+                    );
+                })
               ],
             );
           }
